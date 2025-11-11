@@ -1,18 +1,4 @@
 {
-  "functions": {
-    "api/auth/register.js": {
-      "runtime": "nodejs18.x"
-    },
-    "api/auth/login.js": {
-      "runtime": "nodejs18.x"
-    },
-    "api/restaurants/nearby.js": {
-      "runtime": "nodejs18.x"
-    },
-    "api/reservations.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "rewrites": [
     {
       "source": "/((?!api/).*)",

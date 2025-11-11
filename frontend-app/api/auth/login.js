@@ -1,5 +1,4 @@
-// Vercel Serverless Function for Login
-module.exports = (req, res) => {
+export default function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -52,4 +51,4 @@ module.exports = (req, res) => {
     console.error('❌ Login error:', error);
     res.status(500).json({ msg: 'Server error during login' });
   }
-};
+}
