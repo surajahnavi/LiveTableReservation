@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { API_ENDPOINTS, handleAPIError } from './config/api';
+import { API_ENDPOINTS, apiFetch, handleAPIError } from './config/api';
 import RegisterForm from './RegisterForm';
 import LoginForm from './LoginForm';
 import PreferencesPage from './PreferencesPage';
@@ -111,17 +111,15 @@ function App() {
     console.log('🔄 Attempting registration for:', form.email);
     
     try {
-      const res = await fetch(API_ENDPOINTS.AUTH.REGISTER, {
+      const data = await apiFetch(API_ENDPOINTS.AUTH.REGISTER, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: form.name, email: form.email, password: form.password })
       });
       
-      const data = await res.json();
-      console.log('Registration response:', res.status, data);
+      console.log('Registration response:', data);
       
-      if (!res.ok) {
-        setRegisterError(data.msg || 'Registration failed');
+      if (data.msg) {
+        setRegisterError(data.msg);
         console.log('❌ Registration failed:', data.msg);
       } else {
         console.log('✅ Registration successful:', data.user.email);
@@ -144,17 +142,15 @@ function App() {
     console.log('🔄 Attempting login for:', form.email);
     
     try {
-      const res = await fetch(API_ENDPOINTS.AUTH.LOGIN, {
+      const data = await apiFetch(API_ENDPOINTS.AUTH.LOGIN, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: form.email, password: form.password })
       });
       
-      const data = await res.json();
-      console.log('Login response:', res.status, data);
+      console.log('Login response:', data);
       
-      if (!res.ok) {
-        setLoginError(data.msg || 'Login failed');
+      if (data.msg) {
+        setLoginError(data.msg);
         console.log('❌ Login failed:', data.msg);
         return;
       } else {
