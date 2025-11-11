@@ -147,10 +147,12 @@ function App() {
       }
     } catch (e) {
       console.error('Registration network error:', e);
+      console.log('Error message:', e.message);
+      console.log('Checking for 405:', e.message.includes('405'));
       
       // Demo fallback for registration when API is not available
       if (e.message.includes('405') || e.message.includes('404') || e.message.includes('demo mode')) {
-        console.log('Using demo registration fallback');
+        console.log('✅ Using demo registration fallback - 405 detected');
         setRegisterSuccess('✅ Demo account created successfully! You can now login with any email/password.');
         setTimeout(() => {
           setPage('login');
@@ -158,6 +160,7 @@ function App() {
           setRegisterSuccess('');
         }, 2000);
       } else {
+        console.log('❌ Not using demo fallback, showing error');
         setRegisterError(handleAPIError(e));
       }
     }
@@ -190,10 +193,12 @@ function App() {
       }
     } catch (e) {
       console.error('Login network error:', e);
+      console.log('Error message:', e.message);
+      console.log('Checking for 405:', e.message.includes('405'));
       
       // Demo fallback for login when API is not available
       if (e.message.includes('405') || e.message.includes('404') || e.message.includes('demo mode')) {
-        console.log('Using demo login fallback');
+        console.log('✅ Using demo login fallback - 405 detected');
         // Create a demo user
         const demoUser = {
           name: form.email.split('@')[0], // Use email prefix as name
@@ -206,6 +211,7 @@ function App() {
         setLoginError('');
         console.log('✅ Demo login successful for:', form.email);
       } else {
+        console.log('❌ Not using demo fallback, showing error');
         setLoginError(handleAPIError(e));
       }
     }
