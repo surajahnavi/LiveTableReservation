@@ -1,6 +1,6 @@
 // API Configuration
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://live-table-reservation-3.vercel.app/api'  // Use absolute URL for production
+  ? '/api'  // Use relative path for production (let Vercel handle routing)
   : 'http://localhost:5000/api';  // In development, use local server
 
 export const API_ENDPOINTS = {
@@ -45,22 +45,34 @@ export const apiFetch = async (url, options = {}) => {
     // Check if response is ok
     if (!response.ok) {
       if (response.status === 404) {
-        throw new Error('Service not found. Please try again later.');
+        throw new Error('Service not found');
       }
       if (response.status === 405) {
-        throw new Error('Service not available. Running in demo mode.');
+        throw new Error('Method not allowed - Service not properly configured');
+      }
+      if (response.status === 401) {
+        throw new Error('Invalid credentials');
+      }
+      if (response.status === 400) {
+        // Try to get specific error message for 400 errors
+        try {
+          const errorData = await safeJsonParse(response);
+          throw new Error(errorData.msg || errorData.message || 'Bad request');
+        } catch {
+          throw new Error('Invalid request');
+        }
       }
       if (response.status >= 500) {
         throw new Error('Server error. Please try again later.');
       }
-      throw new Error(`Request failed: ${response.status}`);
+      throw new Error(`Request failed with status ${response.status}`);
     }
 
     // Safely parse JSON
     return await safeJsonParse(response);
   } catch (error) {
     if (error.name === 'TypeError' && error.message.includes('fetch')) {
-      throw new Error('Cannot connect to server. Please check your internet connection.');
+      throw new Error('Failed to fetch - Cannot connect to server');
     }
     throw error;
   }

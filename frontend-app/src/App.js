@@ -150,21 +150,21 @@ function App() {
     } catch (e) {
       console.error('Registration network error:', e);
       console.log('Error message:', e.message);
-      console.log('Checking for 405:', e.message.includes('405'));
       
-      // Demo fallback for registration when API is not available (broader conditions)
-      if (e.message.includes('405') || e.message.includes('404') || 
-          e.message.includes('demo mode') || e.message.includes('Service not found') ||
-          e.message.includes('Method Not Allowed') || e.message.includes('Request failed')) {
-        console.log('✅ Using demo registration fallback - API not available');
-        setRegisterSuccess('✅ Demo account created successfully! You can now login with any email/password.');
+      // Only use demo fallback for network/server unavailability errors
+      // Don't use demo for validation errors (like "User already exists")
+      if (e.message.includes('Failed to fetch') || e.message.includes('NetworkError') ||
+          e.message.includes('Service not found') || e.message.includes('Service not available') ||
+          e.name === 'TypeError') {
+        console.log('✅ Using demo registration fallback - Server unavailable');
+        setRegisterSuccess('✅ Server unavailable. Demo account created! You can now login.');
         setTimeout(() => {
           setPage('login');
           setRegisterError('');
           setRegisterSuccess('');
         }, 2000);
       } else {
-        console.log('❌ Not using demo fallback, showing error');
+        console.log('❌ Server responded with error, not using demo fallback');
         setRegisterError(handleAPIError(e));
       }
     }
@@ -199,18 +199,25 @@ function App() {
     } catch (e) {
       console.error('Login network error:', e);
       console.log('Error message:', e.message);
-      console.log('Checking for 405:', e.message.includes('405'));
       
-      // Demo fallback for login when API is not available (broader conditions)
-      if (e.message.includes('405') || e.message.includes('404') || 
-          e.message.includes('demo mode') || e.message.includes('Service not found') ||
-          e.message.includes('Method Not Allowed') || e.message.includes('Request failed')) {
-        console.log('✅ Using demo login fallback - API not available');
+      // Only use demo fallback for true network/server errors, not authentication failures
+      if (e.message.includes('Failed to fetch') || e.message.includes('NetworkError') ||
+          e.message.includes('Service not found') || e.message.includes('Service not available') ||
+          e.name === 'TypeError') {
+        console.log('✅ Using demo login fallback - Server unavailable');
+        
+        // Basic validation for demo mode
+        if (!form.password || form.password.length < 3) {
+          setLoginError('Demo mode: Please enter at least 3 characters for password');
+          return;
+        }
+        
         // Create a demo user
         const demoUser = {
-          name: form.email.split('@')[0], // Use email prefix as name
+          name: form.email.split('@')[0],
           email: form.email,
-          id: 'demo-' + Date.now()
+          id: 'demo-' + Date.now(),
+          isDemoUser: true
         };
         setUser(demoUser);
         localStorage.setItem('demo-user', JSON.stringify(demoUser));
@@ -218,7 +225,7 @@ function App() {
         setLoginError('');
         console.log('✅ Demo login successful for:', form.email);
       } else {
-        console.log('❌ Not using demo fallback, showing error');
+        console.log('❌ Server responded with error, not using demo fallback');
         setLoginError(handleAPIError(e));
       }
     }
@@ -325,6 +332,20 @@ function App() {
 
   return (
     <div className="App">
+      {/* Demo Mode Indicator */}
+      {user && user.isDemoUser && (
+        <div style={{
+          backgroundColor: '#fff3cd',
+          color: '#856404',
+          padding: '8px 16px',
+          textAlign: 'center',
+          borderBottom: '1px solid #ffeaa7',
+          fontSize: '14px',
+          fontWeight: '500'
+        }}>
+          🔧 Demo Mode: Backend server not available. Using offline functionality.
+        </div>
+      )}
       <main style={{ padding: 24 }}>
         {page === 'register' && (
           <RegisterForm
