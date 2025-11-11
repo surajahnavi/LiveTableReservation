@@ -65,7 +65,8 @@ const BookTablePage = ({ restaurant, table, onBack, onConfirmBooking }) => {
       console.error('Reservation error:', error);
       
       // Fallback: Show booking confirmation even if API fails (for demo purposes)
-      if (error.message.includes('connect') || error.message.includes('Service not found')) {
+      if (error.message.includes('connect') || error.message.includes('Service not found') || 
+          error.message.includes('405') || error.message.includes('demo mode')) {
         console.log('Using fallback booking confirmation for demo');
         setBookingConfirmed(true);
         

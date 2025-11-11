@@ -47,6 +47,9 @@ export const apiFetch = async (url, options = {}) => {
       if (response.status === 404) {
         throw new Error('Service not found. Please try again later.');
       }
+      if (response.status === 405) {
+        throw new Error('Service not available. Running in demo mode.');
+      }
       if (response.status >= 500) {
         throw new Error('Server error. Please try again later.');
       }
@@ -71,6 +74,12 @@ export const handleAPIError = (error) => {
   }
   if (error.message.includes('JSON')) {
     return 'Server response error. Please try again later.';
+  }
+  if (error.message.includes('405') || error.message.includes('Method Not Allowed')) {
+    return 'Service is in demo mode. Full functionality coming soon!';
+  }
+  if (error.message.includes('404') || error.message.includes('Service not found')) {
+    return 'Service temporarily unavailable. Please try again later.';
   }
   return error.message || 'Something went wrong. Please try again.';
 };
