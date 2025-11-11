@@ -1,14 +1,19 @@
 {
   "name": "reservation",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Live Table Reservation System - Full Stack Application",
+  "main": "backend/server.js",
   "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node backend/server-mock.js",
+    "build": "cd frontend-app && npm install && npm run build",
+    "install-client": "cd frontend-app && npm install",
+    "heroku-postbuild": "npm run install-client && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["restaurant", "reservation", "react", "nodejs", "express", "mongodb"],
+  "author": "surajahnavi",
+  "license": "MIT",
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
