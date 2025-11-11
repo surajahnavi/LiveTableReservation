@@ -266,6 +266,7 @@ const VoiceBot = ({ onRestaurantFound, restaurants = [] }) => {
 
       setRecognition(recognitionInstance);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Remove processVoiceCommand dependency to avoid circular dependency
 
   // Process voice command to find restaurants with enhanced accuracy

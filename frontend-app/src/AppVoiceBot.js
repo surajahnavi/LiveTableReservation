@@ -325,6 +325,7 @@ const AppVoiceBot = ({
 
       setRecognition(recognitionInstance);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Remove processVoiceCommand dependency to avoid circular dependency
 
   // Quick action handlers
