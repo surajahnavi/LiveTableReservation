@@ -264,12 +264,28 @@ const AppVoiceBot = ({
         speechRecognitionList.addFromString(grammar, 1);
         recognitionInstance.grammars = speechRecognitionList;
       }
-
+      
       recognitionInstance.onstart = () => {
         console.log('🎤 Voice recognition started');
         setIsListening(true);
         setError(null);
-        setResponse('Listening... Speak now!');
+        setResponse('🎤 Listening... Speak now!');
+      };
+      
+      recognitionInstance.onerror = (event) => {
+        console.error('🎤 Speech recognition error:', event.error);
+        setIsListening(false);
+        
+        // More descriptive error messages
+        if (event.error === 'network') {
+          setError('❌ Network error. Check your internet connection.');
+        } else if (event.error === 'no-speech') {
+          setError('❌ No speech detected. Try again.');
+        } else if (event.error === 'not-allowed') {
+          setError('❌ Microphone access denied. Please allow microphone access.');
+        } else {
+          setError(`❌ Voice recognition error: ${event.error}. Try using Chrome or Edge.`);
+        }
       };
       
       recognitionInstance.onend = () => {
@@ -277,36 +293,10 @@ const AppVoiceBot = ({
         setIsListening(false);
       };
       
-      recognitionInstance.onerror = (event) => {
-        console.error('🎤 Voice recognition error:', event.error);
-        setIsListening(false);
-        let errorMsg = 'Voice recognition failed. ';
-        switch(event.error) {
-          case 'no-speech':
-            errorMsg += 'No speech detected. Try speaking louder.';
-            break;
-          case 'audio-capture':
-            errorMsg += 'Microphone not accessible.';
-            break;
-          case 'not-allowed':
-            errorMsg += 'Microphone permission denied.';
-            break;
-          case 'network':
-            errorMsg += 'Network error occurred.';
-            break;
-          default:
-            errorMsg += 'Please try again.';
-        }
-        setError(errorMsg);
-      };
-
       recognitionInstance.onresult = (event) => {
-        console.log('🎤 Voice recognition result event:', event);
-        
         let finalTranscript = '';
-        let alternatives = [];
+        const alternatives = [];
         
-        // Get all results and alternatives
         for (let i = 0; i < event.results.length; i++) {
           const result = event.results[i];
           if (result.isFinal) {
@@ -336,129 +326,6 @@ const AppVoiceBot = ({
       setRecognition(recognitionInstance);
     }
   }, []); // Remove processVoiceCommand dependency to avoid circular dependency
-
-  // Quick action handlers
-    const allCommands = [command, ...alternatives].map(c => c.toLowerCase().trim());
-    console.log('🎤 Processing voice commands:', allCommands);
-    
-    setResponse('Processing your command...');
-    
-    setTimeout(() => {
-      let matched = false;
-      
-      // Check all command variations for better accuracy
-      for (const cmd of allCommands) {
-        console.log('🎤 Checking command:', cmd);
-        
-        // Login/Sign-in commands (multiple variations)
-        if (cmd.includes('login') || cmd.includes('sign in') || cmd.includes('signin') || 
-            cmd.includes('log in') || cmd === 'login' || cmd === 'sign in') {
-          console.log('✅ LOGIN command detected');
-          setResponse('✅ Going to login page...');
-          setTimeout(() => onNavigate('login'), 1500);
-          matched = true;
-          break;
-        }
-        
-        // Register/Sign-up commands
-        if (cmd.includes('register') || cmd.includes('sign up') || cmd.includes('signup') || 
-            cmd.includes('create account') || cmd === 'register') {
-          console.log('✅ REGISTER command detected');
-          setResponse('✅ Going to registration page...');
-          setTimeout(() => onNavigate('register'), 1500);
-          matched = true;
-          break;
-        }
-        
-        // Restaurant commands
-        if (cmd.includes('restaurant') || cmd.includes('find restaurant') || cmd.includes('show restaurant') ||
-            cmd.includes('nearby') || cmd.includes('search restaurant') || cmd === 'restaurants' ||
-            cmd.includes('find places') || cmd.includes('find food')) {
-          console.log('✅ RESTAURANTS command detected');
-          setResponse('✅ Showing nearby restaurants...');
-          setTimeout(() => onNavigate('nearby'), 1500);
-          matched = true;
-          break;
-        }
-        
-        // Reservations/bookings commands
-        if (cmd.includes('reservation') || cmd.includes('booking') || cmd.includes('my reservation') ||
-            cmd.includes('my booking') || cmd.includes('view reservation') || cmd === 'reservations' ||
-            cmd.includes('my orders') || cmd.includes('my tables')) {
-          console.log('✅ RESERVATIONS command detected');
-          if (currentUser) {
-            setResponse('✅ Showing your reservations...');
-            setTimeout(() => onNavigate('reservations'), 1500);
-          } else {
-            setResponse('❌ Please log in first to view reservations');
-          }
-          matched = true;
-          break;
-        }
-        
-        // Home/Dashboard commands
-        if (cmd.includes('home') || cmd.includes('dashboard') || cmd.includes('main page') ||
-            cmd === 'home' || cmd === 'dashboard' || cmd.includes('go home') || cmd.includes('main')) {
-          console.log('✅ HOME command detected');
-          setResponse('✅ Going to home page...');
-          setTimeout(() => onNavigate('dashboard'), 1500);
-          matched = true;
-          break;
-        }
-        
-        // Preferences commands
-        if (cmd.includes('preference') || cmd.includes('setting') || cmd.includes('profile') ||
-            cmd === 'preferences' || cmd.includes('my preference')) {
-          console.log('✅ PREFERENCES command detected');
-          setResponse('✅ Opening preferences...');
-          setTimeout(() => onNavigate('preferences'), 1500);
-          matched = true;
-          break;
-        }
-        
-        // Booking commands
-        if (cmd.includes('book') || cmd.includes('reserve') || cmd.includes('make reservation')) {
-          console.log('✅ BOOKING command detected');
-          if (!currentUser) {
-            setResponse('❌ Please log in first. Say "login" to get started.');
-            matched = true;
-            break;
-          }
-          
-          // Try to find restaurant name in command
-          const foundRestaurant = restaurants.find(r => 
-            cmd.includes(r.name.toLowerCase()) ||
-            r.name.toLowerCase().split(' ').some(word => cmd.includes(word) && word.length > 2)
-          );
-          
-          if (foundRestaurant) {
-            setResponse(`✅ Found ${foundRestaurant.name}! Navigating to booking...`);
-            setTimeout(() => onNavigate('nearby'), 1500);
-          } else {
-            setResponse('✅ Let me show you available restaurants first...');
-            setTimeout(() => onNavigate('nearby'), 1500);
-          }
-          matched = true;
-          break;
-        }
-        
-        // Help command
-        if (cmd.includes('help') || cmd.includes('command') || cmd.includes('what can you do') ||
-            cmd === 'help' || cmd.includes('how to') || cmd.includes('assist')) {
-          console.log('✅ HELP command detected');
-          setResponse('📋 Voice commands: "login", "register", "restaurants", "reservations", "home", "book table"');
-          matched = true;
-          break;
-        }
-      }
-      
-      // If no command matched
-      if (!matched) {
-        console.log('❌ No command matched for:', allCommands);
-        setResponse(`❓ I heard: "${command}". Try: "login", "restaurants", "reservations", "home", or "help"`);
-      }
-    }, 500); // Shorter delay for better responsiveness
-  };
 
   // Quick action handlers
   const handleQuickAction = (action) => {
@@ -529,32 +396,36 @@ const AppVoiceBot = ({
               fontSize: '1rem',
               textAlign: 'center' 
             }}>
-              🗣️ Voice Assistant
+              🎤 Voice Navigation
             </h3>
           </>
         )}
         
-        <VoiceBotButton 
-          onClick={isExpanded ? toggleListening : toggleExpansion}
+        <VoiceBotButton
           isListening={isListening}
           isExpanded={isExpanded}
+          onClick={isExpanded ? toggleListening : toggleExpansion}
+          title={isExpanded ? 
+            (isListening ? 'Stop listening' : 'Start voice recognition') : 
+            'Open voice assistant'
+          }
         >
-          {isListening ? '🔴' : '🎙️'}
+          {isListening ? '🛑' : '🎤'}
         </VoiceBotButton>
+
+        <StatusText isExpanded={isExpanded} isListening={isListening}>
+          {isListening ? 'Listening...' : 'Click microphone to speak'}
+        </StatusText>
+
+        <TranscriptDisplay isExpanded={isExpanded}>
+          {displayText || 'Voice feedback will appear here...'}
+        </TranscriptDisplay>
 
         {isExpanded && (
           <>
-            <StatusText isListening={isListening} isExpanded={isExpanded}>
-              {isListening ? 'Listening...' : 'Click mic to speak'}
-            </StatusText>
-
-            <TranscriptDisplay isExpanded={isExpanded}>
-              {displayText}
-            </TranscriptDisplay>
-
             <QuickActionsContainer isExpanded={isExpanded}>
               <QuickActionButton onClick={() => handleQuickAction('restaurants')}>
-                🍽️ Find Restaurants
+                🍽️ Restaurants
               </QuickActionButton>
               {!currentUser && (
                 <QuickActionButton onClick={() => handleQuickAction('login')}>

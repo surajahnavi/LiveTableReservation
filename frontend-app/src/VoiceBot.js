@@ -347,7 +347,7 @@ const VoiceBot = ({ onRestaurantFound, restaurants = [] }) => {
         }
       }
     }, 1000);
-  }, [onNavigate, onRestaurantSelect, restaurants]); // Add dependencies for useCallback
+  }, [onRestaurantFound, restaurants]); // Add dependencies for useCallback
 
   // Toggle voice listening with better feedback
   const toggleListening = () => {
