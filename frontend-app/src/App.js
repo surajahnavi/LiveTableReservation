@@ -101,16 +101,11 @@ function App() {
 
   // Load demo user data on app startup if available
   useEffect(() => {
+    // Remove auto-loading of demo users
+    // Users should login manually each time
     const demoUser = localStorage.getItem('demo-user');
     if (demoUser) {
-      try {
-        const userData = JSON.parse(demoUser);
-        setUser(userData);
-        console.log('Loaded demo user:', userData.email);
-      } catch (e) {
-        console.error('Error loading demo user:', e);
-        localStorage.removeItem('demo-user');
-      }
+      localStorage.removeItem('demo-user'); // Clean up any existing demo user
     }
   }, []);
 
@@ -151,12 +146,15 @@ function App() {
       console.error('Registration network error:', e);
       console.log('Error message:', e.message);
       
+      // Make error message lowercase for easier matching
+      const errorMsg = e.message.toLowerCase();
+      
       // Only use demo fallback for network/server unavailability errors
       // Don't use demo for validation errors (like "User already exists")
-      if (e.message.includes('Failed to fetch') || e.message.includes('NetworkError') ||
-          e.message.includes('Service not found') || e.message.includes('Service not available') ||
-          e.message.includes('Method not allowed') || e.message.includes('not properly configured') ||
-          e.name === 'TypeError') {
+      if (errorMsg.includes('failed to fetch') || errorMsg.includes('networkerror') ||
+          errorMsg.includes('service not found') || errorMsg.includes('service not available') ||
+          errorMsg.includes('method not allowed') || errorMsg.includes('not properly configured') ||
+          errorMsg.includes('cannot connect') || e.name === 'TypeError') {
         console.log('✅ Using demo registration fallback - Server unavailable');
         setRegisterSuccess('✅ Server unavailable. Demo account created! You can now login.');
         setTimeout(() => {
@@ -201,11 +199,14 @@ function App() {
       console.error('Login network error:', e);
       console.log('Error message:', e.message);
       
+      // Make error message lowercase for easier matching
+      const errorMsg = e.message.toLowerCase();
+      
       // Only use demo fallback for true network/server errors, not authentication failures
-      if (e.message.includes('Failed to fetch') || e.message.includes('NetworkError') ||
-          e.message.includes('Service not found') || e.message.includes('Service not available') ||
-          e.message.includes('Method not allowed') || e.message.includes('not properly configured') ||
-          e.name === 'TypeError') {
+      if (errorMsg.includes('failed to fetch') || errorMsg.includes('networkerror') ||
+          errorMsg.includes('service not found') || errorMsg.includes('service not available') ||
+          errorMsg.includes('method not allowed') || errorMsg.includes('not properly configured') ||
+          errorMsg.includes('cannot connect') || e.name === 'TypeError') {
         console.log('✅ Using demo login fallback - Server unavailable');
         
         // Basic validation for demo mode
@@ -214,7 +215,7 @@ function App() {
           return;
         }
         
-        // Create a demo user
+        // Create a demo user (don't persist to localStorage)
         const demoUser = {
           name: form.email.split('@')[0],
           email: form.email,
@@ -222,7 +223,7 @@ function App() {
           isDemoUser: true
         };
         setUser(demoUser);
-        localStorage.setItem('demo-user', JSON.stringify(demoUser));
+        // Don't save demo user to localStorage anymore
         setPage('preferences');
         setLoginError('');
         console.log('✅ Demo login successful for:', form.email);
