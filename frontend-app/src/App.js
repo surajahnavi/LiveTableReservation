@@ -155,6 +155,7 @@ function App() {
       // Don't use demo for validation errors (like "User already exists")
       if (e.message.includes('Failed to fetch') || e.message.includes('NetworkError') ||
           e.message.includes('Service not found') || e.message.includes('Service not available') ||
+          e.message.includes('Method not allowed') || e.message.includes('not properly configured') ||
           e.name === 'TypeError') {
         console.log('✅ Using demo registration fallback - Server unavailable');
         setRegisterSuccess('✅ Server unavailable. Demo account created! You can now login.');
@@ -203,6 +204,7 @@ function App() {
       // Only use demo fallback for true network/server errors, not authentication failures
       if (e.message.includes('Failed to fetch') || e.message.includes('NetworkError') ||
           e.message.includes('Service not found') || e.message.includes('Service not available') ||
+          e.message.includes('Method not allowed') || e.message.includes('not properly configured') ||
           e.name === 'TypeError') {
         console.log('✅ Using demo login fallback - Server unavailable');
         
