@@ -19,10 +19,5 @@
       "src": "/(.*)",
       "dest": "frontend-app/build/index.html"
     }
-  ],
-  "functions": {
-    "backend/server.js": {
-      "maxDuration": 30
-    }
-  }
+  ]
 }
