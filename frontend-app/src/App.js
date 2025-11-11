@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { API_ENDPOINTS, handleAPIError } from './config/api';
 import RegisterForm from './RegisterForm';
 import LoginForm from './LoginForm';
 import PreferencesPage from './PreferencesPage';
@@ -110,7 +111,7 @@ function App() {
     console.log('🔄 Attempting registration for:', form.email);
     
     try {
-      const res = await fetch('http://localhost:5000/api/auth/register', {
+      const res = await fetch(API_ENDPOINTS.AUTH.REGISTER, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: form.name, email: form.email, password: form.password })
@@ -133,7 +134,7 @@ function App() {
       }
     } catch (e) {
       console.error('Registration network error:', e);
-      setRegisterError('Cannot connect to server. Please check your connection.');
+      setRegisterError(handleAPIError(e));
     }
   }
 
@@ -143,7 +144,7 @@ function App() {
     console.log('🔄 Attempting login for:', form.email);
     
     try {
-      const res = await fetch('http://localhost:5000/api/auth/login', {
+      const res = await fetch(API_ENDPOINTS.AUTH.LOGIN, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: form.email, password: form.password })
@@ -166,7 +167,7 @@ function App() {
       }
     } catch (e) {
       console.error('Login network error:', e);
-      setLoginError('Cannot connect to server. Please check your connection.');
+      setLoginError(handleAPIError(e));
     }
   }
 

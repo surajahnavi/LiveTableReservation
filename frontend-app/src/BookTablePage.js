@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import { API_ENDPOINTS } from './config/api';
 
 const BookTablePage = ({ restaurant, table, onBack, onConfirmBooking }) => {
   const [formData, setFormData] = useState({
@@ -36,7 +37,7 @@ const BookTablePage = ({ restaurant, table, onBack, onConfirmBooking }) => {
 
     try {
       // Call backend API to create reservation with email confirmation
-      const response = await fetch('http://localhost:5000/api/reservations', {
+      const response = await fetch(API_ENDPOINTS.RESERVATIONS, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
