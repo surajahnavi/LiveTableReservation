@@ -1,5 +1,5 @@
 // Vercel Serverless Function for Registration
-export default function handler(req, res) {
+module.exports = (req, res) => {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -53,4 +53,4 @@ export default function handler(req, res) {
     console.error('❌ Registration error:', error);
     res.status(500).json({ msg: 'Server error during registration' });
   }
-}
+};

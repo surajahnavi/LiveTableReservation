@@ -1,5 +1,5 @@
 // Vercel Serverless Function for Restaurant Search
-export default function handler(req, res) {
+module.exports = (req, res) => {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -76,4 +76,4 @@ export default function handler(req, res) {
     console.error('Restaurant search error:', error);
     res.status(500).json({ msg: 'Server error fetching restaurants' });
   }
-}
+};
