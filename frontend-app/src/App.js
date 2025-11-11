@@ -96,7 +96,7 @@ function App() {
   // Booking state
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [selectedTable, setSelectedTable] = useState(null);
-  const [bookingConfirmation, setBookingConfirmation] = useState(null);
+  const [, setBookingConfirmation] = useState(null); // eslint-disable-line no-unused-vars
 
   // Voice navigation handler
   const handleVoiceNavigation = (targetPage) => {

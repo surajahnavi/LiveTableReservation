@@ -266,7 +266,7 @@ const VoiceBot = ({ onRestaurantFound, restaurants = [] }) => {
 
       setRecognition(recognitionInstance);
     }
-  }, []);
+  }, [processVoiceCommand]); // Added processVoiceCommand dependency
 
   // Process voice command to find restaurants with enhanced accuracy
   const processVoiceCommand = (command, alternatives = []) => {

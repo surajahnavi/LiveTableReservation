@@ -7,7 +7,7 @@ const NearbyRestaurantsPage = ({ location, onBack, cuisines }) => {
   const [error, setError] = useState("");
   const [currentLocation, setCurrentLocation] = useState(null);
   const [locationStatus, setLocationStatus] = useState("detecting");
-  const [selectedVoiceRestaurant, setSelectedVoiceRestaurant] = useState(null);
+  const [, setSelectedVoiceRestaurant] = useState(null); // eslint-disable-line no-unused-vars
 
   // Detect user's current location
   useEffect(() => {

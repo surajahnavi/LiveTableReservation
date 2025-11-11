@@ -237,7 +237,7 @@ const AppVoiceBot = ({
 
       setRecognition(recognitionInstance);
     }
-  }, []);
+  }, [processVoiceCommand]); // Added processVoiceCommand dependency
 
   // Process voice commands for app navigation with improved accuracy
   const processVoiceCommand = (command, alternatives = []) => {
@@ -374,6 +374,9 @@ const AppVoiceBot = ({
         break;
       case 'help':
         setResponse('Say: "show restaurants", "login", "register", "my reservations", or "book table at [restaurant name]"');
+        break;
+      default:
+        console.log('Unknown quick action:', action);
         break;
     }
   };
