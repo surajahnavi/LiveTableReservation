@@ -99,15 +99,7 @@ function App() {
   const [selectedTable, setSelectedTable] = useState(null);
   const [, setBookingConfirmation] = useState(null); // eslint-disable-line no-unused-vars
 
-  // Load demo user data on app startup if available
-  useEffect(() => {
-    // Remove auto-loading of demo users
-    // Users should login manually each time
-    const demoUser = localStorage.getItem('demo-user');
-    if (demoUser) {
-      localStorage.removeItem('demo-user'); // Clean up any existing demo user
-    }
-  }, []);
+  // Users should login manually each time - no auto-loading of any stored data
 
   // Voice navigation handler
   const handleVoiceNavigation = (targetPage) => {
