@@ -133,26 +133,30 @@ function App() {
       
       console.log('Registration response:', data);
       
-      if (data.msg) {
-        setRegisterError(data.msg);
-        console.log('❌ Registration failed:', data.msg);
-      } else {
-        console.log('✅ Registration successful:', data.user.email);
+      // Check for successful registration
+      if (data.success || (data.user && data.user.email)) {
+        console.log('✅ Registration successful:', data.user?.email || form.email);
         setRegisterSuccess('Registration successful! You can now log in.');
         setTimeout(() => {
           setPage('login');
           setRegisterError('');
           setRegisterSuccess('');
         }, 1500);
+      } else {
+        // Registration failed
+        setRegisterError(data.msg || data.message || 'Registration failed. Please try again.');
+        console.log('❌ Registration failed:', data.msg || data.message);
       }
     } catch (e) {
       console.error('Registration network error:', e);
       console.log('Error message:', e.message);
       console.log('Checking for 405:', e.message.includes('405'));
       
-      // Demo fallback for registration when API is not available
-      if (e.message.includes('405') || e.message.includes('404') || e.message.includes('demo mode')) {
-        console.log('✅ Using demo registration fallback - 405 detected');
+      // Demo fallback for registration when API is not available (broader conditions)
+      if (e.message.includes('405') || e.message.includes('404') || 
+          e.message.includes('demo mode') || e.message.includes('Service not found') ||
+          e.message.includes('Method Not Allowed') || e.message.includes('Request failed')) {
+        console.log('✅ Using demo registration fallback - API not available');
         setRegisterSuccess('✅ Demo account created successfully! You can now login with any email/password.');
         setTimeout(() => {
           setPage('login');
@@ -179,26 +183,29 @@ function App() {
       
       console.log('Login response:', data);
       
-      if (data.msg) {
-        setLoginError(data.msg);
-        console.log('❌ Login failed:', data.msg);
-        return;
-      } else {
+      // Check for successful login
+      if (data.success || (data.user && data.token)) {
         // Login successful
-        console.log('✅ Login successful:', data.user.email);
-        setUser(data.user);
-        localStorage.setItem('token', data.token);
+        console.log('✅ Login successful:', data.user?.email || form.email);
+        setUser(data.user || { email: form.email, name: form.email.split('@')[0] });
+        if (data.token) localStorage.setItem('token', data.token);
         setPage('preferences');
         setLoginError('');
+      } else {
+        // Login failed
+        setLoginError(data.msg || data.message || 'Login failed. Please check your credentials.');
+        console.log('❌ Login failed:', data.msg || data.message);
       }
     } catch (e) {
       console.error('Login network error:', e);
       console.log('Error message:', e.message);
       console.log('Checking for 405:', e.message.includes('405'));
       
-      // Demo fallback for login when API is not available
-      if (e.message.includes('405') || e.message.includes('404') || e.message.includes('demo mode')) {
-        console.log('✅ Using demo login fallback - 405 detected');
+      // Demo fallback for login when API is not available (broader conditions)
+      if (e.message.includes('405') || e.message.includes('404') || 
+          e.message.includes('demo mode') || e.message.includes('Service not found') ||
+          e.message.includes('Method Not Allowed') || e.message.includes('Request failed')) {
+        console.log('✅ Using demo login fallback - API not available');
         // Create a demo user
         const demoUser = {
           name: form.email.split('@')[0], // Use email prefix as name
