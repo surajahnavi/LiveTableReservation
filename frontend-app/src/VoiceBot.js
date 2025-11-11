@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 // Floating VoiceBot Widget Styles
@@ -266,10 +266,10 @@ const VoiceBot = ({ onRestaurantFound, restaurants = [] }) => {
 
       setRecognition(recognitionInstance);
     }
-  }, [processVoiceCommand]); // Added processVoiceCommand dependency
+  }, []); // Remove processVoiceCommand dependency to avoid circular dependency
 
   // Process voice command to find restaurants with enhanced accuracy
-  const processVoiceCommand = (command, alternatives = []) => {
+  const processVoiceCommand = useCallback((command, alternatives = []) => {
     const allCommands = [command, ...alternatives].map(c => c.toLowerCase().trim());
     console.log('🎤 Processing restaurant search commands:', allCommands);
     
@@ -347,7 +347,7 @@ const VoiceBot = ({ onRestaurantFound, restaurants = [] }) => {
         }
       }
     }, 1000);
-  };
+  }, [onNavigate, onRestaurantSelect, restaurants]); // Add dependencies for useCallback
 
   // Toggle voice listening with better feedback
   const toggleListening = () => {

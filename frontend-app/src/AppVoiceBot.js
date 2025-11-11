@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 // Global VoiceBot for App-wide functionality
@@ -141,6 +141,104 @@ const AppVoiceBot = ({
   const [error, setError] = useState(null);
   const [recognition, setRecognition] = useState(null);
 
+  // Process voice commands for app navigation with improved accuracy
+  const processVoiceCommand = useCallback((command, alternatives = []) => {
+    const allCommands = [command, ...alternatives].map(c => c.toLowerCase().trim());
+    console.log('🎤 Processing voice commands:', allCommands);
+    
+    setResponse('Processing your command...');
+    
+    setTimeout(() => {
+      let matched = false;
+      
+      // Check all command variations for better accuracy
+      for (const cmd of allCommands) {
+        console.log('🎤 Checking command:', cmd);
+        
+        // Login/Sign-in commands (multiple variations)
+        if (cmd.includes('login') || cmd.includes('sign in') || cmd.includes('signin') || 
+            cmd.includes('log in') || cmd === 'login' || cmd === 'sign in') {
+          console.log('✅ LOGIN command detected');
+          setResponse('✅ Going to login page...');
+          setTimeout(() => onNavigate('login'), 1500);
+          matched = true;
+          break;
+        }
+        
+        // Register/Sign-up commands
+        if (cmd.includes('register') || cmd.includes('sign up') || cmd.includes('signup') || 
+            cmd.includes('create account') || cmd === 'register') {
+          console.log('✅ REGISTER command detected');
+          setResponse('✅ Going to registration page...');
+          setTimeout(() => onNavigate('register'), 1500);
+          matched = true;
+          break;
+        }
+        
+        // Restaurant commands - enhanced matching
+        if (cmd.includes('restaurant') || cmd.includes('food') || cmd.includes('eat') || 
+            cmd.includes('dining') || cmd.includes('nearby') || cmd === 'restaurants' || 
+            cmd.includes('show restaurants') || cmd.includes('find restaurants')) {
+          console.log('✅ RESTAURANT command detected');
+          setResponse('✅ Finding nearby restaurants...');
+          setTimeout(() => onNavigate('nearby'), 1500);
+          matched = true;
+          break;
+        }
+        
+        // Reservation/Booking commands
+        if (cmd.includes('reservation') || cmd.includes('booking') || cmd.includes('my bookings') || 
+            cmd.includes('my reservations') || cmd === 'reservations' || cmd.includes('book table')) {
+          console.log('✅ RESERVATION command detected');
+          setResponse('✅ Showing your reservations...');
+          setTimeout(() => onNavigate('reservations'), 1500);
+          matched = true;
+          break;
+        }
+        
+        // Home commands
+        if (cmd.includes('home') || cmd.includes('main') || cmd.includes('start') || 
+            cmd === 'home' || cmd === 'go home' || cmd.includes('back to home')) {
+          console.log('✅ HOME command detected');
+          setResponse('✅ Going to home page...');
+          setTimeout(() => onNavigate('home'), 1500);
+          matched = true;
+          break;
+        }
+        
+        // Logout commands
+        if (cmd.includes('logout') || cmd.includes('sign out') || cmd.includes('log out') || 
+            cmd === 'logout') {
+          console.log('✅ LOGOUT command detected');
+          setResponse('✅ Logging you out...');
+          setTimeout(() => {
+            // Clear local storage or perform logout logic
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            onNavigate('login');
+          }, 1500);
+          matched = true;
+          break;
+        }
+        
+        // Help commands
+        if (cmd.includes('help') || cmd.includes('what can you do') || cmd.includes('commands') || 
+            cmd === 'help' || cmd.includes('how to') || cmd.includes('assist')) {
+          console.log('✅ HELP command detected');
+          setResponse('📋 Voice commands: "login", "register", "restaurants", "reservations", "home", "book table"');
+          matched = true;
+          break;
+        }
+      }
+      
+      // If no command matched
+      if (!matched) {
+        console.log('❌ No command matched for:', allCommands);
+        setResponse(`❓ I heard: "${command}". Try: "login", "restaurants", "reservations", "home", or "help"`);
+      }
+    }, 500); // Shorter delay for better responsiveness
+  }, [onNavigate]); // Add dependencies for useCallback
+
   // Initialize speech recognition
   useEffect(() => {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
@@ -237,10 +335,9 @@ const AppVoiceBot = ({
 
       setRecognition(recognitionInstance);
     }
-  }, [processVoiceCommand]); // Added processVoiceCommand dependency
+  }, []); // Remove processVoiceCommand dependency to avoid circular dependency
 
-  // Process voice commands for app navigation with improved accuracy
-  const processVoiceCommand = (command, alternatives = []) => {
+  // Quick action handlers
     const allCommands = [command, ...alternatives].map(c => c.toLowerCase().trim());
     console.log('🎤 Processing voice commands:', allCommands);
     
