@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { API_ENDPOINTS, apiFetch, handleAPIError } from './config/api';
 import RegisterForm from './RegisterForm';
 import LoginForm from './LoginForm';
