@@ -1,6 +1,6 @@
 // API Configuration
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? '/api'  // Use relative path for production (let Vercel handle routing)
+  ? 'https://livetablereservation-2.onrender.com/api'  // Use Render backend in production
   : 'http://localhost:5000/api';  // In development, use local server
 
 export const API_ENDPOINTS = {
